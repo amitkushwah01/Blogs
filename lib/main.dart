@@ -2,18 +2,13 @@ import 'dart:convert';
 import 'package:blog_explorer/HomePage.dart';
 import 'package:blog_explorer/models/blogModelFile.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as httpClient;
 void main()
 {
   runApp(MyApp());
 }
-class MyApp extends StatefulWidget
+class MyApp extends StatelessWidget
 {
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,21 +19,21 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-Future<BlogeModel> fetchBlogs() async {
-  var mUrl = "https://api.pexels.com/v1/search?query=nature&per_page=1";
-  var response = await http.get(Uri.parse(mUrl), headers: {
-    "Authorization": "GYJm0cNufW4Kyb11oaox1HyiCUdi9Gf3SDC4tFAsXBa65gVqS6RFvqp6"
-  });
 
-  if (response.statusCode == 200) {
-    // Request successful, handle the response data here
-    print('Response data: ${response.body}');
+Future<MyBlogModel> fetchBlogs() async{
+  var mUrl = 'https://intent-kit-16.hasura.app/api/rest/blogs';
+
+  var response = await httpClient.get(Uri.parse(mUrl) , headers: {"x-hasura-admin-secret":"32qR4KmXOIpsGPQKMqEJHGJS27G5s7HdSKO3gdtQd2kv5e852SiYwWNfxkZOBuQ6"});
+
+  if(response.statusCode==200)
+  {
+    print('Ok');
     var data = jsonDecode(response.body);
-    return BlogeModel.fromJson(data);
-  } else {
-    // Request failed
-    print('Request failed with status code: ${response.statusCode}');
-    print('Response data: ${response.body}');
-    return BlogeModel();
+    return MyBlogModel.fromJson(data);
+  }
+  else
+  {
+    print(response.statusCode);
+    return MyBlogModel();
   }
 }

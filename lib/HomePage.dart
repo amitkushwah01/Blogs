@@ -1,3 +1,4 @@
+import 'package:blog_explorer/DetailsScreen.dart';
 import 'package:blog_explorer/main.dart';
 import 'package:blog_explorer/models/blogModelFile.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class _HomePageState extends State<HomePage> {
     blogobj = fetchBlogs();
     super.initState();
   }
-  late Future<BlogeModel> blogobj;
+  late Future<MyBlogModel> blogobj;
 
   var list = [
     'ALL',
@@ -72,55 +73,39 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-//<<<<<<<<    Tabbar Start  END  >>>>>>>>>>>
-
-//<<<<<<<<    Continer Start    >>>>>>>>>>>
-
-          // Expanded(
-          //   child:
-          //   ListView.builder(
-          //     // itemCount: 10,
-          //     itemBuilder: (context, index) {
-          //     return
-          //       Padding(
-          //         padding: const EdgeInsets.all(8.0),
-          //         child: Column(
-          //           children: [
-          //             Container(
-          //               child: Center(child: Text('Wallpaper')),
-          //               height: 250,
-          //               color: Colors.yellow,
-          //             ),
-          //             Container(
-          //               height: 100,
-          //               width: MediaQuery.sizeOf(context).width,
-          //               color: Colors.blueAccent,
-          //                 child:Center(
-          //                   child: Text('Content  ')
-          //                 ),
-          //             ),
-          //           ],
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
-
-//<<<<<<<<    Conatiner Start  END  >>>>>>>>>>>
-
 Expanded(
-  child:FutureBuilder<BlogeModel>(
+  child:FutureBuilder<MyBlogModel>(
     future : blogobj,
     builder: (context, snapshot) {
 
       if(snapshot.hasData)
       {
         return ListView.builder(
+          itemCount: 50,
           itemBuilder: (context, index) {
-            return 
-            // Text(snapshot.data!.blogs!.length);
-            // Image.network(snapshot.data!.blogs!.)
-            Container(child: Text(' Hello'),);
+            return
+            Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return Detail(snapshot.data!.blogs![index].imageUrl! , snapshot.data!.blogs![index].title! , snapshot.data!.blogs![index].id!);
+                      },
+                    ));
+                  },
+                  child: Image.network(snapshot.data!.blogs![index].imageUrl!)
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Title : - "+snapshot.data!.blogs![index].title! , style: TextStyle(color: Colors.white),),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(" I ' D : - "+snapshot.data!.blogs![index].id! , style: TextStyle(color: Colors.white),),
+                ),
+              ],
+            );
           },
         );
       }

@@ -1,9 +1,9 @@
-class BlogeModel {
+class MyBlogModel {
   List<Blogs>? blogs;
 
-  BlogeModel({this.blogs});
+  MyBlogModel({this.blogs});
 
-  BlogeModel.fromJson(Map<String, dynamic> json) {
+  MyBlogModel.fromJson(Map<String, dynamic> json) {
     if (json['blogs'] != null) {
       blogs = <Blogs>[];
       json['blogs'].forEach((v) {
