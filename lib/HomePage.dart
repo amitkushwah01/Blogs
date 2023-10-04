@@ -1,7 +1,10 @@
+import 'package:blog_explorer/Blog_repo.dart';
 import 'package:blog_explorer/DetailsScreen.dart';
+import 'package:blog_explorer/bloc/bloc_bloc.dart';
 import 'package:blog_explorer/main.dart';
 import 'package:blog_explorer/models/blogModelFile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget
 {
@@ -11,11 +14,12 @@ class HomePage extends StatefulWidget
 
 class _HomePageState extends State<HomePage> {
   @override
+  var a = Colors.grey[900];
   void initState() {
-    blogobj = fetchBlogs();
+    BlocProvider.of<BlocBloc>(context).add(TrendingBlogeEvent());
     super.initState();
   }
-  late Future<MyBlogModel> blogobj;
+  late MyBlogModel blogobj;
 
   var list = [
     'ALL',
@@ -27,8 +31,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
-      appBar:AppBar(backgroundColor: Colors.blueGrey,
+      backgroundColor: a,
+      appBar:AppBar(backgroundColor: a,
         title:Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(' Bloge And Articles'),
@@ -59,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(5),
                   child: Container(
                     decoration: const BoxDecoration(
-                      color: Colors.black,
+                      // color: Colors.black,
                       borderRadius: BorderRadius.all(
                         Radius.circular(5)
                       )),
@@ -74,13 +78,15 @@ class _HomePageState extends State<HomePage> {
           ),
 
 Expanded(
-  child:FutureBuilder<MyBlogModel>(
-    future : blogobj,
-    builder: (context, snapshot) {
-
-      if(snapshot.hasData)
-      {
-        return ListView.builder(
+  child: BlocBuilder<BlocBloc , BlocState>(
+    builder: (context, state) {
+      if(state is BlogeLoadingState){
+        return Center(child: CircularProgressIndicator());
+      }
+      else if(state is BlogeLoadedState){
+        blogobj = state.Modelobj;
+        return 
+        ListView.builder(
           itemCount: 50,
           itemBuilder: (context, index) {
             return
@@ -90,38 +96,83 @@ Expanded(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) {
-                        return Detail(snapshot.data!.blogs![index].imageUrl! , snapshot.data!.blogs![index].title! , snapshot.data!.blogs![index].id!);
+                        return Detail(blogobj.blogs![index].imageUrl! , blogobj.blogs![index].title! , blogobj.blogs![index].id!);
                       },
                     ));
                   },
-                  child: Image.network(snapshot.data!.blogs![index].imageUrl!)
+                  child: Image.network(blogobj.blogs![index].imageUrl!)
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Title : - "+snapshot.data!.blogs![index].title! , style: TextStyle(color: Colors.white),),
+                Container(color: Colors.grey[700],width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("Title : - "+blogobj.blogs![index].title! , style: TextStyle(color: Colors.white),),
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Text(" I ' D : - "+snapshot.data!.blogs![index].id! , style: TextStyle(color: Colors.white),),
+                Container(color: Colors.grey[700],width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Text(" I ' D : - "+blogobj!.blogs![index].id! , style: TextStyle(color: Colors.white),),
+                  ),
                 ),
               ],
             );
           },
         );
       }
-
-      else if(snapshot.hasError)
-      {
-        return Center(child: Text('${snapshot.error}'),);
-      }
-
-      else
-      {
-        return Center(child: CircularProgressIndicator());
-      }
+      return Container();
     },
-  )
+  ),
 )
+
+// Expanded(
+//   child:FutureBuilder<MyBlogModel>(
+//     future : blogobj,
+//     builder: (context, snapshot) {
+
+//       if(snapshot.hasData)
+//       {
+//         return ListView.builder(
+//           itemCount: 50,
+//           itemBuilder: (context, index) {
+//             return
+//             Column(
+//               children: [
+//                 InkWell(
+//                   onTap: () {
+//                     Navigator.push(context, MaterialPageRoute(
+//                       builder: (context) {
+//                         return Detail(snapshot.data!.blogs![index].imageUrl! , snapshot.data!.blogs![index].title! , snapshot.data!.blogs![index].id!);
+//                       },
+//                     ));
+//                   },
+//                   child: Image.network(snapshot.data!.blogs![index].imageUrl!)
+//                 ),
+//                 Padding(
+//                   padding: const EdgeInsets.all(8.0),
+//                   child: Text("Title : - "+snapshot.data!.blogs![index].title! , style: TextStyle(color: Colors.white),),
+//                 ),
+//                 Padding(
+//                   padding: const EdgeInsets.only(bottom: 10),
+//                   child: Text(" I ' D : - "+snapshot.data!.blogs![index].id! , style: TextStyle(color: Colors.white),),
+//                 ),
+//               ],
+//             );
+//           },
+//         );
+//       }
+
+//       else if(snapshot.hasError)
+//       {
+//         return Center(child: Text('${snapshot.error}'),);
+//       }
+
+//       else
+//       {
+//         return Center(child: CircularProgressIndicator());
+//       }
+//     },
+//   )
+// )
 
         ],
       ),
